@@ -1,0 +1,139 @@
+server:
+  port: 8081
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: iam-service
+
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/buildledger_iam?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:Root@123}
+    driver-class-name: ${DB_DRIVER:com.mysql.cj.jdbc.Driver}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: ${JPA_SHOW_SQL:false}
+    properties:
+      hibernate:
+        dialect: ${JPA_DIALECT:org.hibernate.dialect.MySQLDialect}
+        format_sql: true
+        use_sql_comments: true
+    open-in-view: false
+
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:testeeii@gmail.com}
+    password: ${MAIL_PASSWORD:xhss vrqf znaq fntq}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 20MB
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:BuildLedgerIAMSecretKey2024SuperSecureBase64EncodedKeyForHMACSHA256Algorithm}
+  access-token-expiration: ${JWT_ACCESS_EXPIRY:900000} # 15 minutes in ms
+  refresh-token-expiration: ${JWT_REFRESH_EXPIRY:604800000} # 7 days in ms
+  issuer: ${JWT_ISSUER:buildledger-iam}
+
+# File Storage
+file:
+  storage:
+    base-path: ${FILE_STORAGE_PATH:./uploads/vendor-documents}
+    allowed-extensions: pdf,jpg,jpeg,png,doc,docx
+
+# External APIs
+external:
+  gst:
+    api-url: ${GST_API_URL:https://api.gst.gov.in/commonapi/v1.1}
+    api-key: ${GST_API_KEY:your-gst-api-key}
+    timeout: 5000
+  pan:
+    api-url: ${PAN_API_URL:https://api.sandbox.co.in/kyc/pan}
+    api-key: ${PAN_API_KEY:your-pan-api-key}
+    timeout: 5000
+  ocr:
+    api-url: ${OCR_API_URL:https://api.ocr.space/parse/image}
+    api-key: ${OCR_API_KEY:your-ocr-api-key}
+    timeout: 10000
+
+# Rate Limiting
+rate-limit:
+  login:
+    capacity: 5
+    refill-duration-minutes: 1
+
+# Admin Bootstrap
+admin:
+  bootstrap:
+    email: ${ADMIN_EMAIL:admin@buildledger.com}
+    password: ${ADMIN_PASSWORD:Admin@2024!}
+    name: ${ADMIN_NAME:System Administrator}
+
+# Password Policy
+password:
+  temp:
+    length: 12
+  reset:
+    token-expiry-minutes: 15
+
+# Springdoc / Swagger
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    doc-expansion: none
+  show-actuator: false
+
+# Spring Boot Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+      base-path: /management
+  endpoint:
+    health:
+      show-details: when-authorized
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: BuildLedger IAM Service
+    version: 1.0.0
+    description: Identity and Access Management for BuildLedger
+
+logging:
+  level:
+    com.buildledger.iam: ${LOG_LEVEL:INFO}
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: ${LOG_FILE:./logs/iam-service.log}
