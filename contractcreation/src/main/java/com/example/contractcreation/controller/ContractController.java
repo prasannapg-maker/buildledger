@@ -2,6 +2,7 @@ package com.example.contractcreation.controller;
 
 import com.example.contractcreation.model.Contract;
 import com.example.contractcreation.service.ContractService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ public class ContractController {
     private ContractService contractService;
 
     @PostMapping
-    public ResponseEntity<Contract> createContract(@RequestBody Contract contract) {
+    public ResponseEntity<Contract> createContract(@Valid @RequestBody Contract contract) {
         Contract savedContract = contractService.createContract(contract);
         return ResponseEntity.status(201).body(savedContract);
     }
@@ -36,7 +37,7 @@ public class ContractController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Contract> updateContract(@PathVariable Long id, @RequestBody Contract contract) {
+    public ResponseEntity<Contract> updateContract(@PathVariable Long id,@Valid @RequestBody Contract contract) {
         Contract updatedContract = contractService.updateContract(id, contract);
         if (updatedContract == null) {
             return ResponseEntity.notFound().build();
@@ -48,5 +49,11 @@ public class ContractController {
     public ResponseEntity<String> deleteContract(@PathVariable Long id) {
         contractService.deleteContract(id);
         return ResponseEntity.ok("Contract deleted successfully");
+    }
+
+    @PutMapping("/{id}/status")
+    public Contract updateContractStatus(@PathVariable Long id,
+                                         @RequestParam String status) {
+        return contractService.updateStatus(id, status);
     }
 }

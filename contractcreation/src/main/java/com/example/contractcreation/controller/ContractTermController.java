@@ -2,6 +2,7 @@ package com.example.contractcreation.controller;
 
 import com.example.contractcreation.model.ContractTerm;
 import com.example.contractcreation.service.ContractTermService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public class ContractTermController {
     private ContractTermService contractTermService;
 
     @PostMapping
-    public ResponseEntity<ContractTerm> createContractTerm(@RequestBody ContractTerm contractTerm) {
+    public ResponseEntity<ContractTerm> createContractTerm(@Valid @RequestBody ContractTerm contractTerm) {
         ContractTerm savedTerm = contractTermService.createContractTerm(contractTerm);
         URI location = URI.create("/contract-terms/" + savedTerm.getTermId());
         return ResponseEntity.created(location).body(savedTerm);
@@ -37,7 +38,7 @@ public class ContractTermController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ContractTerm> updateContractTerm(@PathVariable Long id, @RequestBody ContractTerm contractTerm) {
+    public ResponseEntity<ContractTerm> updateContractTerm(@PathVariable Long id,@Valid @RequestBody ContractTerm contractTerm) {
         ContractTerm updatedTerm = contractTermService.updateContractTerm(id, contractTerm);
         if (updatedTerm == null) {
             return ResponseEntity.notFound().build();
